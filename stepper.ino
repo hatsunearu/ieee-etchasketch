@@ -1,4 +1,4 @@
-int pulseSchedule[] = {1, 50, 3, 10, 2, 50};
+int pulseSchedule[] = {2, 30, 4, 10, 1, 10, 4, 20, 2, 10, 4, 10, 1, 30, 3, 10, 2, 10, 3, 20, 1, 10, 3, 10};
 
 unsigned long lastStep = 0; //time since last step
 int dir = 0; //direction of motor step
@@ -6,12 +6,12 @@ int pulses = 0; //number of pulses to step in dir
 
 // -- PIN ASSIGNMENTS --
 int LR_CCW_PIN = 40, LR_CW_PIN = 41; 
-int UD_CCW_PIN = 50, UD_CW_PIN = 51;
+int UD_CCW_PIN = 48, UD_CW_PIN = 49;
 int DISABLE_PIN = 52;
 // ---------------------
 
 // -- PULSE CONFIGS --
-int PW_US = 3; //pulse width in us 
+int PW_US = 5; //pulse width in us 
 int STEP_DELAY = 50; //period of pulses in ms
 // -------------------
 
@@ -23,6 +23,11 @@ void setup() {
   pinMode(DISABLE_PIN, OUTPUT);
   
   digitalWrite(DISABLE_PIN, HIGH);
+  
+  digitalWrite(LR_CCW_PIN, HIGH);
+  digitalWrite(LR_CW_PIN, HIGH);
+  digitalWrite(UD_CCW_PIN, HIGH);
+  digitalWrite(UD_CW_PIN, HIGH);
   
   Serial.begin(9600);
 }
@@ -56,6 +61,7 @@ void stepperScheduler() { //looks at pulseSchedule and finds next valid pulse sc
         pulses = pulseSchedule[i+1];
         pulseSchedule[i] = 0;
         pulseSchedule[i+1] = 0;
+        delay(10);
         break;
       }
       
@@ -65,28 +71,28 @@ void stepperScheduler() { //looks at pulseSchedule and finds next valid pulse sc
 
 void stepn(int dir) { //dir = 1 left 2 = right 3 = up 4 = down 5 = disable
   switch (dir) {
-    case 1: //LEFT
+    case 2: 
       digitalWrite(DISABLE_PIN, LOW);
       digitalWrite(LR_CW_PIN, HIGH); //pull other pin high
       digitalWrite(LR_CCW_PIN, LOW);
       delayMicroseconds(PW_US);
       digitalWrite(LR_CCW_PIN, HIGH);
       break;
-    case 2: //RIGHT
+    case 1: 
       digitalWrite(DISABLE_PIN, LOW);
       digitalWrite(LR_CCW_PIN, HIGH); 
       digitalWrite(LR_CW_PIN, LOW);
       delayMicroseconds(PW_US);
       digitalWrite(LR_CW_PIN, HIGH);
       break;    
-    case 3: //UP      
+    case 4:       
       digitalWrite(DISABLE_PIN, LOW);
       digitalWrite(UD_CCW_PIN, HIGH); 
       digitalWrite(UD_CW_PIN, LOW);
       delayMicroseconds(PW_US);
-      digitalWrite(LR_CW_PIN, HIGH);
+      digitalWrite(UD_CW_PIN, HIGH);
       break;
-    case 4: //DOWN
+    case 3: 
       digitalWrite(DISABLE_PIN, LOW);
       digitalWrite(UD_CW_PIN, HIGH);
       digitalWrite(UD_CCW_PIN, LOW);
